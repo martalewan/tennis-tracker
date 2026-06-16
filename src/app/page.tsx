@@ -56,8 +56,8 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto flex h-screen w-full max-w-[1220px] flex-col gap-4 overflow-hidden px-4 py-4 max-[980px]:h-auto max-[980px]:min-h-screen max-[980px]:overflow-visible max-sm:px-3 max-sm:py-3">
-      <header className="grid h-[43vh] min-h-[312px] max-h-[340px] gap-4 overflow-hidden rounded-card border border-primary bg-primary p-5 text-white shadow-panel md:grid-cols-[minmax(0,1fr)_300px]">
+    <main className="mx-auto flex min-h-dvh w-full max-w-[1220px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:h-dvh lg:overflow-hidden">
+      <header className="grid gap-4 rounded-card border border-primary bg-primary p-4 text-white shadow-panel sm:p-5 lg:h-[43dvh] lg:min-h-[312px] lg:max-h-[340px] lg:grid-cols-[minmax(0,1fr)_300px] lg:overflow-hidden">
         <section className="flex min-h-0 flex-col justify-between gap-4">
           <nav className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs font-extrabold uppercase text-accent-contrast">
@@ -76,7 +76,7 @@ export default function Home() {
             <p className="mb-2 text-sm font-bold text-white/60">
               Point-by-point focus board
             </p>
-            <h1 className="max-w-[780px] text-[clamp(2.4rem,5vw,4.6rem)] font-black leading-[0.92] text-white">
+            <h1 className="max-w-[780px] text-[clamp(2.35rem,9vw,4.6rem)] font-black leading-[0.92] text-white">
               Own the next point.
             </h1>
             <p className="mt-3 max-w-[540px] text-sm leading-6 text-white/70">
@@ -105,10 +105,10 @@ export default function Home() {
       </header>
 
       <section
-        className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_320px] gap-4 max-[980px]:grid-cols-1"
+        className="grid flex-1 gap-4 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_320px]"
         aria-label="Tennis match tracker"
       >
-        <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-3">
+        <div className="grid gap-3 lg:min-h-0 lg:grid-rows-[auto_minmax(0,1fr)]">
           <div className="flex items-end justify-between gap-4 max-sm:flex-col max-sm:items-start">
             <div>
               <p className="text-xs font-extrabold uppercase text-accent">
@@ -121,7 +121,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid min-h-0 grid-cols-2 gap-4 max-sm:grid-cols-1">
+          <div className="grid gap-4 sm:grid-cols-2 lg:min-h-0">
             {(["you", "opponent"] as Player[]).map((player) => (
               <ScoreTile
                 isWinner={gameOver && points[player] > points[getOpponent(player)]}
@@ -136,7 +136,7 @@ export default function Home() {
           </div>
         </div>
 
-        <aside className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4">
+        <aside className="grid gap-4 lg:min-h-0 lg:grid-rows-[auto_minmax(0,1fr)]">
           <section className="rounded-card border border-border bg-surface p-4 shadow-panel">
             <p className="text-xs font-extrabold uppercase text-accent">Next cue</p>
             <p className="mt-3 text-xl font-black leading-7 text-foreground">
@@ -146,7 +146,7 @@ export default function Home() {
             </p>
           </section>
 
-          <section className="flex min-h-0 flex-col rounded-card border border-border bg-surface p-4 shadow-panel">
+          <section className="flex min-h-[220px] flex-col rounded-card border border-border bg-surface p-4 shadow-panel lg:min-h-0">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-extrabold uppercase text-accent">
@@ -217,7 +217,7 @@ function ScoreTile({
   subtitle: string;
 }) {
   return (
-    <article className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 rounded-card border border-border bg-surface p-4 shadow-panel">
+    <article className="grid min-h-[320px] grid-rows-[auto_minmax(0,1fr)_auto] gap-3 rounded-card border border-border bg-surface p-4 shadow-panel sm:min-h-[360px] lg:min-h-0">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-2xl font-black text-foreground">{label}</h3>
@@ -230,7 +230,7 @@ function ScoreTile({
         )}
       </div>
 
-      <strong className="self-center text-[clamp(4rem,10vw,7.2rem)] font-black leading-none text-foreground">
+      <strong className="self-center text-[clamp(4rem,16vw,7.2rem)] font-black leading-none text-foreground">
         {score}
       </strong>
 
@@ -254,7 +254,7 @@ function CourtPreview({
   status: string;
 }) {
   return (
-    <aside className="grid min-h-0 overflow-hidden rounded-card bg-clay p-3">
+    <aside className="grid min-h-[260px] overflow-hidden rounded-card bg-clay p-3 lg:min-h-0">
       <div className="relative grid min-h-0 rounded-card border-2 border-white/75 bg-court p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)]">
         <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-white/65" />
         <div className="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-white/65" />
