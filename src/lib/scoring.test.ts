@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   addPointToScore,
+  getDisplayScore,
   getMatchStatus,
   getWinRate,
   initialPoints,
@@ -21,15 +22,25 @@ describe("scoring helpers", () => {
   });
 
   it("does not change the score after the game is over", () => {
-    const finishedScore = { you: 4, opponent: 2 };
+    const finishedScore = { you: 5, opponent: 3 };
 
     expect(addPointToScore(finishedScore, "opponent")).toBe(finishedScore);
   });
 
   it("detects finished games", () => {
-    expect(isGameOver({ you: 4, opponent: 1 })).toBe(true);
-    expect(isGameOver({ you: 2, opponent: 4 })).toBe(true);
+    expect(isGameOver({ you: 4, opponent: 2 })).toBe(true);
+    expect(isGameOver({ you: 3, opponent: 5 })).toBe(true);
     expect(isGameOver({ you: 3, opponent: 3 })).toBe(false);
+    expect(isGameOver({ you: 4, opponent: 3 })).toBe(false);
+  });
+
+  it("formats regular, deuce, advantage, and game scores", () => {
+    expect(getDisplayScore({ you: 2, opponent: 1 }, "you")).toBe("30");
+    expect(getDisplayScore({ you: 3, opponent: 3 }, "you")).toBe("40");
+    expect(getDisplayScore({ you: 4, opponent: 3 }, "you")).toBe("Ad");
+    expect(getDisplayScore({ you: 4, opponent: 3 }, "opponent")).toBe("40");
+    expect(getDisplayScore({ you: 5, opponent: 3 }, "you")).toBe("Game");
+    expect(getDisplayScore({ you: 5, opponent: 3 }, "opponent")).toBe("-");
   });
 
   it("returns helpful match status text", () => {
@@ -39,7 +50,10 @@ describe("scoring helpers", () => {
     expect(getMatchStatus({ you: 3, opponent: 3 })).toBe(
       "Deuce pressure. Play one clean point.",
     );
-    expect(getMatchStatus({ you: 4, opponent: 2 })).toBe(
+    expect(getMatchStatus({ you: 4, opponent: 3 })).toBe(
+      "Advantage you. Commit to the first ball.",
+    );
+    expect(getMatchStatus({ you: 5, opponent: 3 })).toBe(
       "You held the game. Reset to track the next one.",
     );
   });

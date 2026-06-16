@@ -3,13 +3,24 @@
 import { useMemo, useState } from "react";
 import {
   addPointToScore,
+  getDisplayScore,
   getMatchStatus,
   getWinRate,
   initialPoints,
-  pointLabels,
+  isGameOver,
   type Player,
   type PointRecord,
 } from "@/lib/scoring";
+
+const playerLabels: Record<Player, string> = {
+  you: "You",
+  opponent: "Opponent",
+};
+
+const playerSubtitles: Record<Player, string> = {
+  you: "Baseline pressure",
+  opponent: "Return rhythm",
+};
 
 export default function Home() {
   const [points, setPoints] = useState(initialPoints);
@@ -18,14 +29,17 @@ export default function Home() {
   const totalPoints = history.length;
   const pointsWon = history.filter((point) => point.winner === "you").length;
   const winRate = getWinRate(pointsWon, totalPoints);
-
   const latestPoint = history[0];
+  const gameOver = isGameOver(points);
 
   const matchStatus = useMemo(() => getMatchStatus(points), [points]);
 
   function addPoint(winner: Player) {
-    setPoints((currentPoints) => addPointToScore(currentPoints, winner));
+    if (gameOver) {
+      return;
+    }
 
+    setPoints((currentPoints) => addPointToScore(currentPoints, winner));
     setHistory((currentHistory) => [
       {
         id: Date.now(),
@@ -42,131 +56,232 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto w-[min(var(--page-width),calc(100%_-_2rem))] py-12 max-sm:w-[calc(100%_-_1.5rem)] max-sm:py-8">
-      <section className="mb-9 grid max-w-[760px] gap-3.5">
-        <p className="text-xs font-extrabold uppercase text-accent">Tennis Tracker</p>
-        <h1 className="max-w-[860px] text-[clamp(2.35rem,6vw,5rem)] leading-[0.98] text-foreground">
-          Track every game with a calmer scoreboard.
-        </h1>
-        <p className="max-w-[620px] text-[1.08rem] leading-7 text-subtle">
-          Log points, watch momentum, and keep your next tactical cue visible
-          between rallies.
-        </p>
-      </section>
-
-      <section
-        className="grid grid-cols-[minmax(0,1fr)_340px] items-stretch gap-[18px] max-[860px]:grid-cols-1"
-        aria-label="Tennis match tracker"
-      >
-        <div className="rounded-card border border-border bg-surface p-6 shadow-panel">
-          <div className="mb-6 flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-start">
-            <div>
-              <p className="text-xs font-extrabold uppercase text-accent">Current Game</p>
-              <h2 className="text-[1.45rem] text-foreground">Singles score</h2>
-            </div>
-
+    <main className="mx-auto grid w-[min(var(--page-width),calc(100%_-_2rem))] gap-6 py-6 max-sm:w-[calc(100%_-_1.5rem)] max-sm:py-4">
+      <header className="grid gap-6 overflow-hidden rounded-card border border-primary bg-primary p-5 text-white shadow-panel md:grid-cols-[minmax(0,1fr)_360px] md:p-8">
+        <section className="grid content-between gap-8">
+          <nav className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs font-extrabold uppercase text-accent-contrast">
+              Tennis Tracker
+            </p>
             <button
-              className="min-h-10 rounded-card bg-primary-soft px-4 font-extrabold text-primary transition hover:-translate-y-px"
+              className="min-h-10 rounded-card border border-white/15 px-4 text-sm font-bold text-white transition hover:-translate-y-px hover:bg-white/10"
               type="button"
               onClick={resetGame}
             >
-              Reset
+              Reset session
             </button>
-          </div>
+          </nav>
 
-          <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
-            <article className="grid min-h-55 gap-[18px] rounded-card border border-border-soft bg-surface-strong p-5">
-              <span className="text-sm font-bold text-muted">You</span>
-              <strong className="text-[clamp(4rem,10vw,7rem)] leading-[0.9] text-foreground">
-                {pointLabels[points.you]}
-              </strong>
-              <button
-                className="min-h-12 self-end rounded-card bg-primary font-extrabold text-white transition hover:-translate-y-px hover:bg-primary-hover"
-                type="button"
-                onClick={() => addPoint("you")}
-              >
-                Add point
-              </button>
-            </article>
-
-            <article className="grid min-h-55 gap-[18px] rounded-card border border-border-soft bg-surface-strong p-5">
-              <span className="text-sm font-bold text-muted">Opponent</span>
-              <strong className="text-[clamp(4rem,10vw,7rem)] leading-[0.9] text-foreground">
-                {pointLabels[points.opponent]}
-              </strong>
-              <button
-                className="min-h-12 self-end rounded-card bg-primary font-extrabold text-white transition hover:-translate-y-px hover:bg-primary-hover"
-                type="button"
-                onClick={() => addPoint("opponent")}
-              >
-                Add point
-              </button>
-            </article>
-          </div>
-
-          <p className="mt-[18px] rounded-card bg-accent-soft p-4 font-bold leading-6 text-primary">
-            {matchStatus}
-          </p>
-        </div>
-
-        <aside className="grid content-start gap-5 rounded-card border border-border bg-surface p-6 shadow-panel">
-          <p className="text-xs font-extrabold uppercase text-accent">Session Stats</p>
-
-          <div className="grid gap-3">
-            <div className="flex min-h-16 items-center justify-between rounded-card border border-border-soft bg-surface-strong px-4">
-              <span className="text-sm font-bold text-muted">Points played</span>
-              <strong className="text-2xl text-foreground">{totalPoints}</strong>
-            </div>
-            <div className="flex min-h-16 items-center justify-between rounded-card border border-border-soft bg-surface-strong px-4">
-              <span className="text-sm font-bold text-muted">Points won</span>
-              <strong className="text-2xl text-foreground">{pointsWon}</strong>
-            </div>
-            <div className="flex min-h-16 items-center justify-between rounded-card border border-border-soft bg-surface-strong px-4">
-              <span className="text-sm font-bold text-muted">Win rate</span>
-              <strong className="text-2xl text-foreground">{winRate}%</strong>
-            </div>
-          </div>
-
-          <div className="grid gap-2 rounded-card bg-primary p-4 text-white">
-            <span className="text-sm font-bold text-accent-contrast">Next cue</span>
-            <p className="leading-6">
-              {latestPoint?.winner === "opponent"
-                ? "Reset your feet early and choose a bigger target."
-                : "Stay aggressive, but give yourself margin over the net."}
+          <div className="max-w-3xl">
+            <p className="mb-3 text-sm font-bold text-white/60">
+              Point-by-point focus board
+            </p>
+            <h1 className="text-[clamp(3rem,8vw,6.8rem)] font-black leading-[0.9] text-white">
+              Own the next point.
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/70">
+              Track the game, read the pressure moments, and keep one clean cue
+              visible between rallies.
             </p>
           </div>
-        </aside>
-      </section>
 
-      <section className="mt-[18px] grid gap-[18px] rounded-card border border-border bg-surface p-6 shadow-panel">
-        <div>
-          <p className="text-xs font-extrabold uppercase text-accent">Point Log</p>
-          <h2 className="text-[1.45rem] text-foreground">Recent rallies</h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Metric label="Points played" value={totalPoints} />
+            <Metric label="Points won" value={pointsWon} />
+            <Metric label="Win rate" value={`${winRate}%`} />
+          </div>
+        </section>
+
+        <CourtPreview
+          leadingPlayer={
+            points.you === points.opponent
+              ? "Level"
+              : points.you > points.opponent
+                ? "You lead"
+                : "Opponent leads"
+          }
+          status={matchStatus}
+        />
+      </header>
+
+      <section
+        className="grid grid-cols-[minmax(0,1fr)_360px] gap-6 max-[980px]:grid-cols-1"
+        aria-label="Tennis match tracker"
+      >
+        <div className="grid gap-4">
+          <div className="flex items-end justify-between gap-4 max-sm:flex-col max-sm:items-start">
+            <div>
+              <p className="text-xs font-extrabold uppercase text-accent">
+                Current Game
+              </p>
+              <h2 className="text-3xl font-black text-foreground">Scoreboard</h2>
+            </div>
+            <p className="rounded-card bg-accent-soft px-4 py-3 text-sm font-bold leading-5 text-primary">
+              {matchStatus}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+            {(["you", "opponent"] as Player[]).map((player) => (
+              <ScoreTile
+                isWinner={gameOver && points[player] > points[getOpponent(player)]}
+                key={player}
+                label={playerLabels[player]}
+                onAddPoint={() => addPoint(player)}
+                score={getDisplayScore(points, player)}
+                subtitle={playerSubtitles[player]}
+                disabled={gameOver}
+              />
+            ))}
+          </div>
         </div>
 
-        {history.length > 0 ? (
-          <ol className="grid gap-2.5">
-            {history.slice(0, 6).map((point, index) => (
-              <li
-                className="grid min-h-14 grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-card border border-border-soft bg-surface-strong px-4 max-sm:grid-cols-1 max-sm:gap-1 max-sm:p-3.5"
-                key={point.id}
-              >
-                <span className="text-sm font-bold text-muted">
-                  #{history.length - index}
-                </span>
-                <strong className="text-foreground">{point.note}</strong>
-                <em className="text-sm not-italic font-extrabold text-accent">
-                  {point.winner === "you" ? "Momentum up" : "Refocus"}
-                </em>
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <p className="leading-6 text-muted">
-            Add the first point to start building your match story.
-          </p>
-        )}
+        <aside className="grid content-start gap-4">
+          <section className="rounded-card border border-border bg-surface p-5 shadow-panel">
+            <p className="text-xs font-extrabold uppercase text-accent">Next cue</p>
+            <p className="mt-4 text-2xl font-black leading-8 text-foreground">
+              {latestPoint?.winner === "opponent"
+                ? "Reset early. Big target. Make them play."
+                : "Stay forward. Keep margin. Trust the pattern."}
+            </p>
+          </section>
+
+          <section className="rounded-card border border-border bg-surface p-5 shadow-panel">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-extrabold uppercase text-accent">
+                  Point Log
+                </p>
+                <h2 className="text-2xl font-black text-foreground">Rallies</h2>
+              </div>
+              <span className="rounded-card bg-primary-soft px-3 py-2 text-sm font-black text-primary">
+                {history.length}
+              </span>
+            </div>
+
+            {history.length > 0 ? (
+              <ol className="mt-5 grid gap-2.5">
+                {history.slice(0, 6).map((point, index) => (
+                  <li
+                    className="grid grid-cols-[42px_minmax(0,1fr)] gap-3 rounded-card border border-border-soft bg-surface-strong p-3"
+                    key={point.id}
+                  >
+                    <span className="text-sm font-black text-accent">
+                      {history.length - index}
+                    </span>
+                    <div>
+                      <strong className="block text-sm text-foreground">
+                        {point.note}
+                      </strong>
+                      <em className="text-sm not-italic text-muted">
+                        {point.winner === "you" ? "Momentum up" : "Refocus"}
+                      </em>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="mt-5 leading-6 text-muted">
+                Add the first point to start building your match story.
+              </p>
+            )}
+          </section>
+        </aside>
       </section>
     </main>
   );
+}
+
+function Metric({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div className="rounded-card border border-white/10 bg-white/8 p-4">
+      <span className="text-xs font-bold text-white/55">{label}</span>
+      <strong className="mt-2 block text-3xl font-black text-white">{value}</strong>
+    </div>
+  );
+}
+
+function ScoreTile({
+  disabled,
+  isWinner,
+  label,
+  onAddPoint,
+  score,
+  subtitle,
+}: {
+  disabled: boolean;
+  isWinner: boolean;
+  label: string;
+  onAddPoint: () => void;
+  score: string;
+  subtitle: string;
+}) {
+  return (
+    <article className="grid min-h-[360px] gap-6 rounded-card border border-border bg-surface p-5 shadow-panel">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-2xl font-black text-foreground">{label}</h3>
+          <p className="mt-1 text-sm font-bold text-muted">{subtitle}</p>
+        </div>
+        {isWinner && (
+          <span className="rounded-card bg-accent-contrast px-3 py-2 text-xs font-black uppercase text-primary">
+            Game
+          </span>
+        )}
+      </div>
+
+      <strong className="self-center text-[clamp(5.5rem,14vw,10rem)] font-black leading-none text-foreground">
+        {score}
+      </strong>
+
+      <button
+        className="min-h-14 self-end rounded-card bg-primary px-5 font-black text-white transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-muted disabled:hover:translate-y-0"
+        disabled={disabled}
+        type="button"
+        onClick={onAddPoint}
+      >
+        Add point
+      </button>
+    </article>
+  );
+}
+
+function CourtPreview({
+  leadingPlayer,
+  status,
+}: {
+  leadingPlayer: string;
+  status: string;
+}) {
+  return (
+    <aside className="grid min-h-[360px] overflow-hidden rounded-card bg-clay p-4">
+      <div className="relative grid rounded-card border-2 border-white/75 bg-court p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)]">
+        <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-white/65" />
+        <div className="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-white/65" />
+        <div className="absolute left-[18%] top-0 h-full w-0.5 bg-white/40" />
+        <div className="absolute right-[18%] top-0 h-full w-0.5 bg-white/40" />
+        <div className="absolute left-[18%] top-[31%] h-0.5 w-[64%] bg-white/55" />
+        <div className="absolute left-[18%] bottom-[31%] h-0.5 w-[64%] bg-white/55" />
+
+        <div className="relative z-10 flex h-full flex-col justify-between">
+          <div>
+            <p className="w-fit rounded-card bg-primary/55 px-2 py-1 text-xs font-black uppercase text-white/80">
+              Court momentum
+            </p>
+            <strong className="mt-2 block text-4xl font-black leading-none text-white">
+              {leadingPlayer}
+            </strong>
+          </div>
+
+          <p className="max-w-[260px] rounded-card bg-white/90 p-4 text-sm font-black leading-5 text-primary">
+            {status}
+          </p>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function getOpponent(player: Player): Player {
+  return player === "you" ? "opponent" : "you";
 }

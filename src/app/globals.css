@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f7ef;
-  --foreground: #111713;
-  --surface: #fbfdf9;
+  --background: #f7f3ea;
+  --foreground: #151816;
+  --surface: #fffdf8;
   --surface-strong: #ffffff;
-  --muted: #657268;
-  --subtle: #4c5a51;
-  --primary: #1b4332;
-  --primary-hover: #245f45;
-  --primary-soft: #e9f3ec;
-  --accent: #2d6a4f;
-  --accent-soft: #eef7ef;
-  --accent-contrast: #b7dfc2;
-  --border: #dce6de;
-  --border-soft: #e2ebe4;
-  --shadow-panel: 0 18px 60px rgba(34, 64, 43, 0.08);
+  --muted: #687169;
+  --subtle: #4f5a52;
+  --primary: #173b2b;
+  --primary-hover: #21563f;
+  --primary-soft: #e5f1df;
+  --accent: #d85d34;
+  --accent-soft: #f7e8dc;
+  --accent-contrast: #d4ff70;
+  --border: #ded8ca;
+  --border-soft: #ebe4d7;
+  --shadow-panel: 0 24px 70px rgba(40, 38, 29, 0.12);
   --radius-card: 8px;
-  --page-width: 1120px;
+  --page-width: 1180px;
 }
 
 @theme inline {
@@ -35,6 +35,9 @@
   --color-accent-contrast: var(--accent-contrast);
   --color-border: var(--border);
   --color-border-soft: var(--border-soft);
+  --color-court: #2f6f51;
+  --color-clay: #d85d34;
+  --color-ink: #151816;
   --shadow-panel: var(--shadow-panel);
   --radius-card: var(--radius-card);
 }
@@ -54,9 +57,7 @@ body {
   display: flex;
   flex-direction: column;
   color: var(--foreground);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(216, 234, 211, 0.72)),
-    var(--background);
+  background: var(--background);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
