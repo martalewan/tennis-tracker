@@ -56,9 +56,9 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto grid h-screen w-[min(var(--page-width),calc(100%_-_2rem))] grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden py-4 max-[980px]:h-auto max-[980px]:min-h-screen max-[980px]:overflow-visible max-sm:w-[calc(100%_-_1.5rem)]">
-      <header className="grid gap-4 overflow-hidden rounded-card border border-primary bg-primary p-4 text-white shadow-panel md:grid-cols-[minmax(0,1fr)_320px]">
-        <section className="grid content-between gap-4">
+    <main className="mx-auto flex h-screen w-full max-w-[1220px] flex-col gap-4 overflow-hidden px-4 py-4 max-[980px]:h-auto max-[980px]:min-h-screen max-[980px]:overflow-visible max-sm:px-3 max-sm:py-3">
+      <header className="grid h-[43vh] min-h-[312px] max-h-[340px] gap-4 overflow-hidden rounded-card border border-primary bg-primary p-5 text-white shadow-panel md:grid-cols-[minmax(0,1fr)_300px]">
+        <section className="flex min-h-0 flex-col justify-between gap-4">
           <nav className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs font-extrabold uppercase text-accent-contrast">
               Tennis Tracker
@@ -76,16 +76,16 @@ export default function Home() {
             <p className="mb-2 text-sm font-bold text-white/60">
               Point-by-point focus board
             </p>
-            <h1 className="text-[clamp(2.5rem,6vw,5.4rem)] font-black leading-[0.9] text-white">
+            <h1 className="max-w-[780px] text-[clamp(2.4rem,5vw,4.6rem)] font-black leading-[0.92] text-white">
               Own the next point.
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-white/70">
+            <p className="mt-3 max-w-[540px] text-sm leading-6 text-white/70">
               Track the game, read the pressure moments, and keep one clean cue
               visible between rallies.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-2.5 sm:grid-cols-3">
             <Metric label="Points played" value={totalPoints} />
             <Metric label="Points won" value={pointsWon} />
             <Metric label="Win rate" value={`${winRate}%`} />
@@ -105,7 +105,7 @@ export default function Home() {
       </header>
 
       <section
-        className="grid min-h-0 grid-cols-[minmax(0,1fr)_320px] gap-4 max-[980px]:grid-cols-1"
+        className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_320px] gap-4 max-[980px]:grid-cols-1"
         aria-label="Tennis match tracker"
       >
         <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-3">
@@ -146,7 +146,7 @@ export default function Home() {
             </p>
           </section>
 
-          <section className="min-h-0 rounded-card border border-border bg-surface p-4 shadow-panel">
+          <section className="flex min-h-0 flex-col rounded-card border border-border bg-surface p-4 shadow-panel">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-extrabold uppercase text-accent">
@@ -160,7 +160,7 @@ export default function Home() {
             </div>
 
             {history.length > 0 ? (
-              <ol className="mt-4 grid max-h-full gap-2 overflow-y-auto pr-1">
+              <ol className="mt-4 grid min-h-0 flex-1 gap-2 overflow-y-auto pr-1">
                 {history.map((point, index) => (
                   <li
                     className="grid grid-cols-[38px_minmax(0,1fr)] gap-3 rounded-card border border-border-soft bg-surface-strong p-2.5"
@@ -194,9 +194,9 @@ export default function Home() {
 
 function Metric({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-card border border-white/10 bg-white/8 p-3">
+    <div className="rounded-card border border-white/10 bg-white/8 px-3 py-2.5">
       <span className="text-xs font-bold text-white/55">{label}</span>
-      <strong className="mt-1 block text-2xl font-black text-white">{value}</strong>
+      <strong className="block text-xl font-black leading-tight text-white">{value}</strong>
     </div>
   );
 }
@@ -217,7 +217,7 @@ function ScoreTile({
   subtitle: string;
 }) {
   return (
-    <article className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 rounded-card border border-border bg-surface p-4 shadow-panel">
+    <article className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-3 rounded-card border border-border bg-surface p-4 shadow-panel">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-2xl font-black text-foreground">{label}</h3>
@@ -230,7 +230,7 @@ function ScoreTile({
         )}
       </div>
 
-      <strong className="self-center text-[clamp(4.5rem,11vw,8rem)] font-black leading-none text-foreground">
+      <strong className="self-center text-[clamp(4rem,10vw,7.2rem)] font-black leading-none text-foreground">
         {score}
       </strong>
 
@@ -254,8 +254,8 @@ function CourtPreview({
   status: string;
 }) {
   return (
-    <aside className="grid min-h-[240px] overflow-hidden rounded-card bg-clay p-3">
-      <div className="relative grid rounded-card border-2 border-white/75 bg-court p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)]">
+    <aside className="grid min-h-0 overflow-hidden rounded-card bg-clay p-3">
+      <div className="relative grid min-h-0 rounded-card border-2 border-white/75 bg-court p-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)]">
         <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-white/65" />
         <div className="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-white/65" />
         <div className="absolute left-[18%] top-0 h-full w-0.5 bg-white/40" />
@@ -273,7 +273,7 @@ function CourtPreview({
             </strong>
           </div>
 
-          <p className="max-w-[260px] rounded-card bg-white/90 p-3 text-sm font-black leading-5 text-primary">
+          <p className="max-w-[245px] rounded-card bg-white/90 p-3 text-sm font-black leading-5 text-primary">
             {status}
           </p>
         </div>
