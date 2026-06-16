@@ -56,9 +56,9 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto grid w-[min(var(--page-width),calc(100%_-_2rem))] gap-6 py-6 max-sm:w-[calc(100%_-_1.5rem)] max-sm:py-4">
-      <header className="grid gap-6 overflow-hidden rounded-card border border-primary bg-primary p-5 text-white shadow-panel md:grid-cols-[minmax(0,1fr)_360px] md:p-8">
-        <section className="grid content-between gap-8">
+    <main className="mx-auto grid h-screen w-[min(var(--page-width),calc(100%_-_2rem))] grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden py-4 max-[980px]:h-auto max-[980px]:min-h-screen max-[980px]:overflow-visible max-sm:w-[calc(100%_-_1.5rem)]">
+      <header className="grid gap-4 overflow-hidden rounded-card border border-primary bg-primary p-4 text-white shadow-panel md:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="grid content-between gap-4">
           <nav className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs font-extrabold uppercase text-accent-contrast">
               Tennis Tracker
@@ -73,13 +73,13 @@ export default function Home() {
           </nav>
 
           <div className="max-w-3xl">
-            <p className="mb-3 text-sm font-bold text-white/60">
+            <p className="mb-2 text-sm font-bold text-white/60">
               Point-by-point focus board
             </p>
-            <h1 className="text-[clamp(3rem,8vw,6.8rem)] font-black leading-[0.9] text-white">
+            <h1 className="text-[clamp(2.5rem,6vw,5.4rem)] font-black leading-[0.9] text-white">
               Own the next point.
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-white/70">
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/70">
               Track the game, read the pressure moments, and keep one clean cue
               visible between rallies.
             </p>
@@ -105,23 +105,23 @@ export default function Home() {
       </header>
 
       <section
-        className="grid grid-cols-[minmax(0,1fr)_360px] gap-6 max-[980px]:grid-cols-1"
+        className="grid min-h-0 grid-cols-[minmax(0,1fr)_320px] gap-4 max-[980px]:grid-cols-1"
         aria-label="Tennis match tracker"
       >
-        <div className="grid gap-4">
+        <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-3">
           <div className="flex items-end justify-between gap-4 max-sm:flex-col max-sm:items-start">
             <div>
               <p className="text-xs font-extrabold uppercase text-accent">
                 Current Game
               </p>
-              <h2 className="text-3xl font-black text-foreground">Scoreboard</h2>
+              <h2 className="text-2xl font-black text-foreground">Scoreboard</h2>
             </div>
-            <p className="rounded-card bg-accent-soft px-4 py-3 text-sm font-bold leading-5 text-primary">
+            <p className="max-w-[440px] rounded-card bg-accent-soft px-4 py-2 text-sm font-bold leading-5 text-primary">
               {matchStatus}
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+          <div className="grid min-h-0 grid-cols-2 gap-4 max-sm:grid-cols-1">
             {(["you", "opponent"] as Player[]).map((player) => (
               <ScoreTile
                 isWinner={gameOver && points[player] > points[getOpponent(player)]}
@@ -136,17 +136,17 @@ export default function Home() {
           </div>
         </div>
 
-        <aside className="grid content-start gap-4">
-          <section className="rounded-card border border-border bg-surface p-5 shadow-panel">
+        <aside className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4">
+          <section className="rounded-card border border-border bg-surface p-4 shadow-panel">
             <p className="text-xs font-extrabold uppercase text-accent">Next cue</p>
-            <p className="mt-4 text-2xl font-black leading-8 text-foreground">
+            <p className="mt-3 text-xl font-black leading-7 text-foreground">
               {latestPoint?.winner === "opponent"
                 ? "Reset early. Big target. Make them play."
                 : "Stay forward. Keep margin. Trust the pattern."}
             </p>
           </section>
 
-          <section className="rounded-card border border-border bg-surface p-5 shadow-panel">
+          <section className="min-h-0 rounded-card border border-border bg-surface p-4 shadow-panel">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-extrabold uppercase text-accent">
@@ -160,10 +160,10 @@ export default function Home() {
             </div>
 
             {history.length > 0 ? (
-              <ol className="mt-5 grid gap-2.5">
-                {history.slice(0, 6).map((point, index) => (
+              <ol className="mt-4 grid max-h-full gap-2 overflow-y-auto pr-1">
+                {history.map((point, index) => (
                   <li
-                    className="grid grid-cols-[42px_minmax(0,1fr)] gap-3 rounded-card border border-border-soft bg-surface-strong p-3"
+                    className="grid grid-cols-[38px_minmax(0,1fr)] gap-3 rounded-card border border-border-soft bg-surface-strong p-2.5"
                     key={point.id}
                   >
                     <span className="text-sm font-black text-accent">
@@ -194,9 +194,9 @@ export default function Home() {
 
 function Metric({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-card border border-white/10 bg-white/8 p-4">
+    <div className="rounded-card border border-white/10 bg-white/8 p-3">
       <span className="text-xs font-bold text-white/55">{label}</span>
-      <strong className="mt-2 block text-3xl font-black text-white">{value}</strong>
+      <strong className="mt-1 block text-2xl font-black text-white">{value}</strong>
     </div>
   );
 }
@@ -217,7 +217,7 @@ function ScoreTile({
   subtitle: string;
 }) {
   return (
-    <article className="grid min-h-[360px] gap-6 rounded-card border border-border bg-surface p-5 shadow-panel">
+    <article className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 rounded-card border border-border bg-surface p-4 shadow-panel">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-2xl font-black text-foreground">{label}</h3>
@@ -230,12 +230,12 @@ function ScoreTile({
         )}
       </div>
 
-      <strong className="self-center text-[clamp(5.5rem,14vw,10rem)] font-black leading-none text-foreground">
+      <strong className="self-center text-[clamp(4.5rem,11vw,8rem)] font-black leading-none text-foreground">
         {score}
       </strong>
 
       <button
-        className="min-h-14 self-end rounded-card bg-primary px-5 font-black text-white transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-muted disabled:hover:translate-y-0"
+        className="min-h-12 self-end rounded-card bg-primary px-5 font-black text-white transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-muted disabled:hover:translate-y-0"
         disabled={disabled}
         type="button"
         onClick={onAddPoint}
@@ -254,8 +254,8 @@ function CourtPreview({
   status: string;
 }) {
   return (
-    <aside className="grid min-h-[360px] overflow-hidden rounded-card bg-clay p-4">
-      <div className="relative grid rounded-card border-2 border-white/75 bg-court p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)]">
+    <aside className="grid min-h-[240px] overflow-hidden rounded-card bg-clay p-3">
+      <div className="relative grid rounded-card border-2 border-white/75 bg-court p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)]">
         <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-white/65" />
         <div className="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-white/65" />
         <div className="absolute left-[18%] top-0 h-full w-0.5 bg-white/40" />
@@ -268,12 +268,12 @@ function CourtPreview({
             <p className="w-fit rounded-card bg-primary/55 px-2 py-1 text-xs font-black uppercase text-white/80">
               Court momentum
             </p>
-            <strong className="mt-2 block text-4xl font-black leading-none text-white">
+            <strong className="mt-2 block text-3xl font-black leading-none text-white">
               {leadingPlayer}
             </strong>
           </div>
 
-          <p className="max-w-[260px] rounded-card bg-white/90 p-4 text-sm font-black leading-5 text-primary">
+          <p className="max-w-[260px] rounded-card bg-white/90 p-3 text-sm font-black leading-5 text-primary">
             {status}
           </p>
         </div>
