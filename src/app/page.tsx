@@ -1,21 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
-type Player = "you" | "opponent";
-
-type PointRecord = {
-  id: number;
-  winner: Player;
-  note: string;
-};
-
-const pointLabels = ["0", "15", "30", "40", "Game"];
-
-const initialPoints = {
-  you: 0,
-  opponent: 0,
-};
+import {
+  addPointToScore,
+  getMatchStatus,
+  getWinRate,
+  initialPoints,
+  pointLabels,
+  type Player,
+  type PointRecord,
+} from "@/lib/scoring";
 
 export default function Home() {
   const [points, setPoints] = useState(initialPoints);
@@ -23,45 +17,14 @@ export default function Home() {
 
   const totalPoints = history.length;
   const pointsWon = history.filter((point) => point.winner === "you").length;
-  const winRate = totalPoints > 0 ? Math.round((pointsWon / totalPoints) * 100) : 0;
+  const winRate = getWinRate(pointsWon, totalPoints);
 
   const latestPoint = history[0];
 
-  const matchStatus = useMemo(() => {
-    if (points.you === 4) {
-      return "You held the game. Reset to track the next one.";
-    }
-
-    if (points.opponent === 4) {
-      return "Opponent took the game. Reset and fight for the next one.";
-    }
-
-    if (points.you === 3 && points.opponent === 3) {
-      return "Deuce pressure. Play one clean point.";
-    }
-
-    if (points.you > points.opponent) {
-      return "You are ahead. Keep the pattern steady.";
-    }
-
-    if (points.opponent > points.you) {
-      return "Down in the game. Pick a high-percentage target.";
-    }
-
-    return "Level score. Build the point patiently.";
-  }, [points]);
+  const matchStatus = useMemo(() => getMatchStatus(points), [points]);
 
   function addPoint(winner: Player) {
-    setPoints((currentPoints) => {
-      if (currentPoints.you === 4 || currentPoints.opponent === 4) {
-        return currentPoints;
-      }
-
-      return {
-        ...currentPoints,
-        [winner]: Math.min(currentPoints[winner] + 1, 4),
-      };
-    });
+    setPoints((currentPoints) => addPointToScore(currentPoints, winner));
 
     setHistory((currentHistory) => [
       {
