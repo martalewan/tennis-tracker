@@ -2,6 +2,11 @@ export type Player = "you" | "opponent";
 
 export type Score = Record<Player, number>;
 
+export type MatchScore = {
+  points: Score;
+  games: Score;
+};
+
 export type PointRecord = {
   id: number;
   winner: Player;
@@ -15,9 +20,22 @@ export const initialPoints: Score = {
   opponent: 0,
 };
 
+export const initialMatchScore: MatchScore = {
+  points: initialPoints,
+  games: initialPoints,
+};
+
 export function isGameOver(points: Score) {
   return Math.max(points.you, points.opponent) >= 4
     && Math.abs(points.you - points.opponent) >= 2;
+}
+
+export function getGameWinner(points: Score): Player | undefined {
+  if (!isGameOver(points)) {
+    return undefined;
+  }
+
+  return points.you > points.opponent ? "you" : "opponent";
 }
 
 export function addPointToScore(points: Score, winner: Player): Score {
@@ -28,6 +46,29 @@ export function addPointToScore(points: Score, winner: Player): Score {
   return {
     ...points,
     [winner]: points[winner] + 1,
+  };
+}
+
+export function addPointToMatchScore(
+  matchScore: MatchScore,
+  winner: Player,
+): MatchScore {
+  const nextPoints = addPointToScore(matchScore.points, winner);
+  const gameWinner = getGameWinner(nextPoints);
+
+  if (!gameWinner) {
+    return {
+      ...matchScore,
+      points: nextPoints,
+    };
+  }
+
+  return {
+    points: initialPoints,
+    games: {
+      ...matchScore.games,
+      [gameWinner]: matchScore.games[gameWinner] + 1,
+    },
   };
 }
 

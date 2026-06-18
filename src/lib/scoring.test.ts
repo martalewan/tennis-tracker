@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  addPointToMatchScore,
   addPointToScore,
   getDisplayScore,
+  getGameWinner,
   getMatchStatus,
   getWinRate,
+  initialMatchScore,
   initialPoints,
   isGameOver,
 } from "./scoring";
@@ -32,6 +35,32 @@ describe("scoring helpers", () => {
     expect(isGameOver({ you: 3, opponent: 5 })).toBe(true);
     expect(isGameOver({ you: 3, opponent: 3 })).toBe(false);
     expect(isGameOver({ you: 4, opponent: 3 })).toBe(false);
+  });
+
+  it("returns the game winner after a completed game", () => {
+    expect(getGameWinner({ you: 4, opponent: 2 })).toBe("you");
+    expect(getGameWinner({ you: 3, opponent: 5 })).toBe("opponent");
+    expect(getGameWinner({ you: 4, opponent: 3 })).toBeUndefined();
+  });
+
+  it("increments games and resets points when a game ends", () => {
+    expect(addPointToMatchScore(initialMatchScore, "you")).toEqual({
+      points: { you: 1, opponent: 0 },
+      games: { you: 0, opponent: 0 },
+    });
+
+    expect(
+      addPointToMatchScore(
+        {
+          points: { you: 3, opponent: 1 },
+          games: { you: 2, opponent: 1 },
+        },
+        "you",
+      ),
+    ).toEqual({
+      points: { you: 0, opponent: 0 },
+      games: { you: 3, opponent: 1 },
+    });
   });
 
   it("formats regular, deuce, advantage, and game scores", () => {

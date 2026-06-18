@@ -2,12 +2,11 @@
 
 import { useMemo, useState } from "react";
 import {
-  addPointToScore,
+  addPointToMatchScore,
   getDisplayScore,
   getMatchStatus,
   getWinRate,
-  initialPoints,
-  isGameOver,
+  initialMatchScore,
   type Player,
   type PointRecord,
 } from "@/lib/scoring";
@@ -23,23 +22,19 @@ const playerSubtitles: Record<Player, string> = {
 };
 
 export default function Home() {
-  const [points, setPoints] = useState(initialPoints);
+  const [matchScore, setMatchScore] = useState(initialMatchScore);
   const [history, setHistory] = useState<PointRecord[]>([]);
 
+  const { games, points } = matchScore;
   const totalPoints = history.length;
   const pointsWon = history.filter((point) => point.winner === "you").length;
   const winRate = getWinRate(pointsWon, totalPoints);
   const latestPoint = history[0];
-  const gameOver = isGameOver(points);
 
   const matchStatus = useMemo(() => getMatchStatus(points), [points]);
 
   function addPoint(winner: Player) {
-    if (gameOver) {
-      return;
-    }
-
-    setPoints((currentPoints) => addPointToScore(currentPoints, winner));
+    setMatchScore((currentScore) => addPointToMatchScore(currentScore, winner));
     setHistory((currentHistory) => [
       {
         id: Date.now(),
@@ -51,14 +46,14 @@ export default function Home() {
   }
 
   function resetGame() {
-    setPoints(initialPoints);
+    setMatchScore(initialMatchScore);
     setHistory([]);
   }
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[1220px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:h-dvh lg:overflow-hidden">
-      <header className="grid gap-4 rounded-card border border-primary bg-primary p-4 text-white shadow-panel sm:p-5 lg:h-[43dvh] lg:min-h-[312px] lg:max-h-[340px] lg:grid-cols-[minmax(0,1fr)_300px] lg:overflow-hidden">
-        <section className="flex min-h-0 flex-col justify-between gap-4">
+      <header className="grid gap-4 rounded-card border border-primary bg-primary p-4 text-white shadow-panel sm:p-5 lg:h-[40dvh] lg:min-h-[300px] lg:max-h-[330px] lg:grid-cols-[minmax(0,1fr)_300px] lg:overflow-hidden">
+        <section className="flex min-h-0 flex-col justify-between gap-3">
           <nav className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs font-extrabold uppercase text-accent-contrast">
               Tennis Tracker
@@ -76,19 +71,19 @@ export default function Home() {
             <p className="mb-2 text-sm font-bold text-white/60">
               Point-by-point focus board
             </p>
-            <h1 className="max-w-[780px] text-[clamp(2.35rem,9vw,4.6rem)] font-black leading-[0.92] text-white">
+            <h1 className="max-w-[760px] text-[clamp(2.35rem,7vw,4rem)] font-black leading-[0.92] text-white">
               Own the next point.
             </h1>
-            <p className="mt-3 max-w-[540px] text-sm leading-6 text-white/70">
+            <p className="mt-2 max-w-[540px] text-sm leading-6 text-white/70">
               Track the game, read the pressure moments, and keep one clean cue
               visible between rallies.
             </p>
           </div>
 
           <div className="grid gap-2.5 sm:grid-cols-3">
-            <Metric label="Points played" value={totalPoints} />
-            <Metric label="Points won" value={pointsWon} />
-            <Metric label="Win rate" value={`${winRate}%`} />
+            <HeroMetric label="Games" value={`${games.you}-${games.opponent}`} />
+            <HeroMetric label="Points won" value={pointsWon} />
+            <HeroMetric label="Win rate" value={`${winRate}%`} />
           </div>
         </section>
 
@@ -124,13 +119,12 @@ export default function Home() {
           <div className="grid gap-4 sm:grid-cols-2 lg:min-h-0">
             {(["you", "opponent"] as Player[]).map((player) => (
               <ScoreTile
-                isWinner={gameOver && points[player] > points[getOpponent(player)]}
+                games={games[player]}
                 key={player}
                 label={playerLabels[player]}
                 onAddPoint={() => addPoint(player)}
                 score={getDisplayScore(points, player)}
                 subtitle={playerSubtitles[player]}
-                disabled={gameOver}
               />
             ))}
           </div>
@@ -192,25 +186,25 @@ export default function Home() {
   );
 }
 
-function Metric({ label, value }: { label: string; value: number | string }) {
+function HeroMetric({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-card border border-white/10 bg-white/8 px-3 py-2.5">
-      <span className="text-xs font-bold text-white/55">{label}</span>
-      <strong className="block text-xl font-black leading-tight text-white">{value}</strong>
+    <div className="rounded-card border border-white/15 bg-white/8 px-3 py-2.5">
+      <span className="text-xs font-bold text-white/60">{label}</span>
+      <strong className="block text-lg font-black leading-tight text-white">
+        {value}
+      </strong>
     </div>
   );
 }
 
 function ScoreTile({
-  disabled,
-  isWinner,
+  games,
   label,
   onAddPoint,
   score,
   subtitle,
 }: {
-  disabled: boolean;
-  isWinner: boolean;
+  games: number;
   label: string;
   onAddPoint: () => void;
   score: string;
@@ -223,11 +217,9 @@ function ScoreTile({
           <h3 className="text-2xl font-black text-foreground">{label}</h3>
           <p className="mt-1 text-sm font-bold text-muted">{subtitle}</p>
         </div>
-        {isWinner && (
-          <span className="rounded-card bg-accent-contrast px-3 py-2 text-xs font-black uppercase text-primary">
-            Game
-          </span>
-        )}
+        <span className="rounded-card bg-primary-soft px-3 py-2 text-xs font-black uppercase text-primary">
+          {games} games
+        </span>
       </div>
 
       <strong className="self-center text-[clamp(4rem,16vw,7.2rem)] font-black leading-none text-foreground">
@@ -236,7 +228,6 @@ function ScoreTile({
 
       <button
         className="min-h-12 self-end rounded-card bg-primary px-5 font-black text-white transition hover:-translate-y-px hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-muted disabled:hover:translate-y-0"
-        disabled={disabled}
         type="button"
         onClick={onAddPoint}
       >
@@ -280,8 +271,4 @@ function CourtPreview({
       </div>
     </aside>
   );
-}
-
-function getOpponent(player: Player): Player {
-  return player === "you" ? "opponent" : "you";
 }
