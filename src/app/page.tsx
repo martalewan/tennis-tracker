@@ -1,20 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Scoreboard from "@/components/Scoreboard";
 import TrackerHero from "@/components/TrackerHero";
 import TrackerSidebar from "@/components/TrackerSidebar";
+import useStoredMatchSession from "@/hooks/useStoredMatchSession";
 import {
   addPointToMatchScore,
   getMatchStatus,
-  initialMatchScore,
   type Player,
-  type PointRecord,
 } from "@/lib/scoring";
 
 export default function Home() {
-  const [matchScore, setMatchScore] = useState(initialMatchScore);
-  const [history, setHistory] = useState<PointRecord[]>([]);
+  const {
+    history,
+    matchScore,
+    resetSession,
+    setHistory,
+    setMatchScore,
+  } = useStoredMatchSession();
 
   const { games, points, sets } = matchScore;
   const pointsWon = history.filter((point) => point.winner === "you").length;
@@ -34,17 +38,12 @@ export default function Home() {
     ]);
   }
 
-  function resetGame() {
-    setMatchScore(initialMatchScore);
-    setHistory([]);
-  }
-
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[1220px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:h-dvh lg:overflow-hidden">
       <TrackerHero
         games={games}
         matchStatus={matchStatus}
-        onReset={resetGame}
+        onReset={resetSession}
         points={points}
         pointsWon={pointsWon}
         sets={sets}
