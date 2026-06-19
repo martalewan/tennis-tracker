@@ -7,7 +7,6 @@ import TrackerSidebar from "@/components/TrackerSidebar";
 import {
   addPointToMatchScore,
   getMatchStatus,
-  getWinRate,
   initialMatchScore,
   type Player,
   type PointRecord,
@@ -17,10 +16,8 @@ export default function Home() {
   const [matchScore, setMatchScore] = useState(initialMatchScore);
   const [history, setHistory] = useState<PointRecord[]>([]);
 
-  const { games, points } = matchScore;
-  const totalPoints = history.length;
+  const { games, points, sets } = matchScore;
   const pointsWon = history.filter((point) => point.winner === "you").length;
-  const winRate = getWinRate(pointsWon, totalPoints);
   const latestPoint = history[0];
 
   const matchStatus = useMemo(() => getMatchStatus(points), [points]);
@@ -50,7 +47,7 @@ export default function Home() {
         onReset={resetGame}
         points={points}
         pointsWon={pointsWon}
-        winRate={winRate}
+        sets={sets}
       />
 
       <section
@@ -62,6 +59,7 @@ export default function Home() {
           matchStatus={matchStatus}
           onAddPoint={addPoint}
           points={points}
+          sets={sets}
         />
         <TrackerSidebar history={history} latestPoint={latestPoint} />
       </section>

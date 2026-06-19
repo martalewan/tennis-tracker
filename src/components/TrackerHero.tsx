@@ -1,12 +1,13 @@
 import type { Score } from "@/lib/scoring";
 import CourtPreview from "./CourtPreview";
 import HeroMetric from "./HeroMetric";
+import SetSummary from "./SetSummary";
 
 type TrackerHeroProps = {
   games: Score;
   points: Score;
   pointsWon: number;
-  winRate: number;
+  sets: Score[];
   matchStatus: string;
   onReset: () => void;
 };
@@ -15,7 +16,7 @@ export default function TrackerHero({
   games,
   points,
   pointsWon,
-  winRate,
+  sets,
   matchStatus,
   onReset,
 }: TrackerHeroProps) {
@@ -56,9 +57,9 @@ export default function TrackerHero({
         </div>
 
         <div className="grid gap-2.5 sm:grid-cols-3">
-          <HeroMetric label="Games" value={`${games.you}-${games.opponent}`} />
+          <HeroMetric label="Current" value={`${games.you}-${games.opponent}`} />
+          <HeroMetric label="Sets" value={<SetSummary sets={sets} />} />
           <HeroMetric label="Points won" value={pointsWon} />
-          <HeroMetric label="Win rate" value={`${winRate}%`} />
         </div>
       </section>
 

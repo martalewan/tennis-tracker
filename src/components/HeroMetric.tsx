@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
+
 type HeroMetricProps = {
   label: string;
-  value: number | string;
+  value: ReactNode;
 };
 
 export default function HeroMetric({ label, value }: HeroMetricProps) {

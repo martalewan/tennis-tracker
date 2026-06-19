@@ -5,10 +5,12 @@ import {
   getDisplayScore,
   getGameWinner,
   getMatchStatus,
+  getSetWinner,
   getWinRate,
   initialMatchScore,
   initialPoints,
   isGameOver,
+  isSetOver,
 } from "./scoring";
 
 describe("scoring helpers", () => {
@@ -47,6 +49,7 @@ describe("scoring helpers", () => {
     expect(addPointToMatchScore(initialMatchScore, "you")).toEqual({
       points: { you: 1, opponent: 0 },
       games: { you: 0, opponent: 0 },
+      sets: [],
     });
 
     expect(
@@ -54,12 +57,43 @@ describe("scoring helpers", () => {
         {
           points: { you: 3, opponent: 1 },
           games: { you: 2, opponent: 1 },
+          sets: [],
         },
         "you",
       ),
     ).toEqual({
       points: { you: 0, opponent: 0 },
       games: { you: 3, opponent: 1 },
+      sets: [],
+    });
+  });
+
+  it("detects finished sets", () => {
+    expect(isSetOver({ you: 6, opponent: 4 })).toBe(true);
+    expect(isSetOver({ you: 6, opponent: 5 })).toBe(false);
+    expect(isSetOver({ you: 7, opponent: 5 })).toBe(true);
+    expect(getSetWinner({ you: 6, opponent: 4 })).toBe("you");
+    expect(getSetWinner({ you: 5, opponent: 7 })).toBe("opponent");
+    expect(getSetWinner({ you: 6, opponent: 5 })).toBeUndefined();
+  });
+
+  it("stores completed sets and resets games", () => {
+    expect(
+      addPointToMatchScore(
+        {
+          points: { you: 3, opponent: 0 },
+          games: { you: 5, opponent: 4 },
+          sets: [{ you: 6, opponent: 3 }],
+        },
+        "you",
+      ),
+    ).toEqual({
+      points: { you: 0, opponent: 0 },
+      games: { you: 0, opponent: 0 },
+      sets: [
+        { you: 6, opponent: 3 },
+        { you: 6, opponent: 4 },
+      ],
     });
   });
 
