@@ -8,14 +8,23 @@ import {
 
 export const MATCH_SESSION_STORAGE_KEY = "tennis-tracker:match-session";
 
+export type PlayerNames = Record<Player, string>;
+
 export type MatchSession = {
   matchScore: MatchScore;
   history: PointRecord[];
+  playerNames: PlayerNames;
+};
+
+export const defaultPlayerNames: PlayerNames = {
+  you: "You",
+  opponent: "Opponent",
 };
 
 export const initialMatchSession: MatchSession = {
   matchScore: initialMatchScore,
   history: [],
+  playerNames: defaultPlayerNames,
 };
 
 export function serializeMatchSession(session: MatchSession) {
@@ -30,8 +39,10 @@ export function parseMatchSession(value: string | null): MatchSession {
   try {
     const parsed: unknown = JSON.parse(value);
 
-    if (isMatchSession(parsed)) {
-      return parsed;
+    const session = getValidMatchSession(parsed);
+
+    if (session) {
+      return session;
     }
   } catch {
     return initialMatchSession;
@@ -40,12 +51,34 @@ export function parseMatchSession(value: string | null): MatchSession {
   return initialMatchSession;
 }
 
-function isMatchSession(value: unknown): value is MatchSession {
+function getValidMatchSession(value: unknown): MatchSession | undefined {
+  if (!isObject(value)) {
+    return undefined;
+  }
+
+  if (!isMatchScore(value.matchScore) || !isPointHistory(value.history)) {
+    return undefined;
+  }
+
+  return {
+    matchScore: value.matchScore,
+    history: value.history,
+    playerNames: isPlayerNames(value.playerNames)
+      ? value.playerNames
+      : defaultPlayerNames,
+  };
+}
+
+function isPlayerNames(value: unknown): value is PlayerNames {
   if (!isObject(value)) {
     return false;
   }
 
-  return isMatchScore(value.matchScore) && isPointHistory(value.history);
+  return isPlayerName(value.you) && isPlayerName(value.opponent);
+}
+
+function isPlayerName(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function isMatchScore(value: unknown): value is MatchScore {

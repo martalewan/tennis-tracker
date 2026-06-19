@@ -5,6 +5,7 @@ import Scoreboard from "@/components/Scoreboard";
 import TrackerHero from "@/components/TrackerHero";
 import TrackerSidebar from "@/components/TrackerSidebar";
 import useStoredMatchSession from "@/hooks/useStoredMatchSession";
+import { defaultPlayerNames } from "@/lib/matchStorage";
 import {
   addPointToMatchScore,
   getMatchScoreFromHistory,
@@ -16,9 +17,11 @@ export default function Home() {
   const {
     history,
     matchScore,
+    playerNames,
     resetSession,
     setHistory,
     setMatchScore,
+    setPlayerNames,
   } = useStoredMatchSession();
 
   const { games, points, sets } = matchScore;
@@ -46,6 +49,20 @@ export default function Home() {
     setMatchScore(getMatchScoreFromHistory(nextHistory));
   }
 
+  function updatePlayerName(player: Player, name: string) {
+    setPlayerNames((currentNames) => ({
+      ...currentNames,
+      [player]: name,
+    }));
+  }
+
+  function commitPlayerName(player: Player) {
+    setPlayerNames((currentNames) => ({
+      ...currentNames,
+      [player]: currentNames[player].trim() || defaultPlayerNames[player],
+    }));
+  }
+
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[1220px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:h-dvh lg:overflow-hidden">
       <TrackerHero
@@ -67,6 +84,9 @@ export default function Home() {
           games={games}
           matchStatus={matchStatus}
           onAddPoint={addPoint}
+          onPlayerNameChange={updatePlayerName}
+          onPlayerNameCommit={commitPlayerName}
+          playerNames={playerNames}
           points={points}
           sets={sets}
         />

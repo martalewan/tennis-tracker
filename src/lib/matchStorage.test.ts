@@ -21,6 +21,10 @@ describe("match storage helpers", () => {
           note: "Point won",
         },
       ],
+      playerNames: {
+        you: "Marta",
+        opponent: "Alex",
+      },
     };
 
     expect(parseMatchSession(serializeMatchSession(session))).toEqual(session);
@@ -32,5 +36,31 @@ describe("match storage helpers", () => {
     expect(parseMatchSession(JSON.stringify({ matchScore: null }))).toEqual(
       initialMatchSession,
     );
+  });
+
+  it("adds default player names to older saved sessions", () => {
+    expect(
+      parseMatchSession(
+        JSON.stringify({
+          matchScore: {
+            points: { you: 1, opponent: 0 },
+            games: { you: 0, opponent: 0 },
+            sets: [],
+          },
+          history: [],
+        }),
+      ),
+    ).toEqual({
+      matchScore: {
+        points: { you: 1, opponent: 0 },
+        games: { you: 0, opponent: 0 },
+        sets: [],
+      },
+      history: [],
+      playerNames: {
+        you: "You",
+        opponent: "Opponent",
+      },
+    });
   });
 });

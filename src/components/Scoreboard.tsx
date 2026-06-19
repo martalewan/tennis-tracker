@@ -1,10 +1,9 @@
+import {
+  defaultPlayerNames,
+  type PlayerNames,
+} from "@/lib/matchStorage";
 import { getDisplayScore, type Player, type Score } from "@/lib/scoring";
 import ScoreTile from "./ScoreTile";
-
-const playerLabels: Record<Player, string> = {
-  you: "You",
-  opponent: "Opponent",
-};
 
 const playerSubtitles: Record<Player, string> = {
   you: "Baseline pressure",
@@ -15,6 +14,9 @@ type ScoreboardProps = {
   games: Score;
   matchStatus: string;
   onAddPoint: (player: Player) => void;
+  onPlayerNameChange: (player: Player, name: string) => void;
+  onPlayerNameCommit: (player: Player) => void;
+  playerNames: PlayerNames;
   points: Score;
   sets: Score[];
 };
@@ -23,6 +25,9 @@ export default function Scoreboard({
   games,
   matchStatus,
   onAddPoint,
+  onPlayerNameChange,
+  onPlayerNameCommit,
+  playerNames,
   points,
   sets,
 }: ScoreboardProps) {
@@ -50,8 +55,11 @@ export default function Scoreboard({
           <ScoreTile
             games={games[player]}
             key={player}
-            label={playerLabels[player]}
+            label={playerNames[player] ?? defaultPlayerNames[player]}
+            onChangeLabel={(name) => onPlayerNameChange(player, name)}
+            onCommitLabel={() => onPlayerNameCommit(player)}
             onAddPoint={() => onAddPoint(player)}
+            playerId={player}
             score={getDisplayScore(points, player)}
             subtitle={playerSubtitles[player]}
           />
