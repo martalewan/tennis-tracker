@@ -5,20 +5,24 @@ import SetSummary from "./SetSummary";
 
 type TrackerHeroProps = {
   games: Score;
+  hasHistory: boolean;
   points: Score;
   pointsWon: number;
   sets: Score[];
   matchStatus: string;
   onReset: () => void;
+  onUndo: () => void;
 };
 
 export default function TrackerHero({
   games,
+  hasHistory,
   points,
   pointsWon,
   sets,
   matchStatus,
   onReset,
+  onUndo,
 }: TrackerHeroProps) {
   const setsWon = getSetsWon(sets);
   const leadingPlayer =
@@ -35,13 +39,23 @@ export default function TrackerHero({
           <p className="text-xs font-extrabold uppercase text-accent-contrast">
             Tennis Tracker
           </p>
-          <button
-            className="min-h-10 rounded-card border border-white/15 px-4 text-sm font-bold text-white transition hover:-translate-y-px hover:bg-white/10"
-            type="button"
-            onClick={onReset}
-          >
-            Reset session
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className="min-h-10 rounded-card border border-white/15 px-4 text-sm font-bold text-white transition hover:-translate-y-px hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 disabled:hover:bg-transparent"
+              type="button"
+              onClick={onUndo}
+              disabled={!hasHistory}
+            >
+              Undo point
+            </button>
+            <button
+              className="min-h-10 rounded-card border border-white/15 px-4 text-sm font-bold text-white transition hover:-translate-y-px hover:bg-white/10"
+              type="button"
+              onClick={onReset}
+            >
+              Reset session
+            </button>
+          </div>
         </nav>
 
         <div className="max-w-3xl">

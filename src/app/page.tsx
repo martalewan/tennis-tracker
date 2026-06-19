@@ -7,6 +7,7 @@ import TrackerSidebar from "@/components/TrackerSidebar";
 import useStoredMatchSession from "@/hooks/useStoredMatchSession";
 import {
   addPointToMatchScore,
+  getMatchScoreFromHistory,
   getMatchStatus,
   type Player,
 } from "@/lib/scoring";
@@ -38,11 +39,20 @@ export default function Home() {
     ]);
   }
 
+  function undoLastPoint() {
+    const nextHistory = history.slice(1);
+
+    setHistory(nextHistory);
+    setMatchScore(getMatchScoreFromHistory(nextHistory));
+  }
+
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[1220px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4 lg:h-dvh lg:overflow-hidden">
       <TrackerHero
         games={games}
+        hasHistory={history.length > 0}
         matchStatus={matchStatus}
+        onUndo={undoLastPoint}
         onReset={resetSession}
         points={points}
         pointsWon={pointsWon}

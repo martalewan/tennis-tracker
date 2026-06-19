@@ -116,6 +116,15 @@ export function addPointToMatchScore(
   };
 }
 
+export function getMatchScoreFromHistory(history: PointRecord[]): MatchScore {
+  return [...history]
+    .reverse()
+    .reduce(
+      (matchScore, point) => addPointToMatchScore(matchScore, point.winner),
+      initialMatchScore,
+    );
+}
+
 export function getDisplayScore(points: Score, player: Player) {
   if (isGameOver(points)) {
     return points[player] > points[getOpponent(player)] ? "Game" : "-";

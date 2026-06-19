@@ -4,6 +4,7 @@ import {
   addPointToScore,
   getDisplayScore,
   getGameWinner,
+  getMatchScoreFromHistory,
   getMatchStatus,
   getSetsWon,
   getSetWinner,
@@ -95,6 +96,49 @@ describe("scoring helpers", () => {
         { you: 6, opponent: 3 },
         { you: 6, opponent: 4 },
       ],
+    });
+  });
+
+  it("rebuilds match score from point history", () => {
+    expect(
+      getMatchScoreFromHistory([
+        { id: 4, winner: "opponent", note: "Point lost" },
+        { id: 3, winner: "you", note: "Point won" },
+        { id: 2, winner: "you", note: "Point won" },
+        { id: 1, winner: "you", note: "Point won" },
+      ]),
+    ).toEqual({
+      points: { you: 3, opponent: 1 },
+      games: { you: 0, opponent: 0 },
+      sets: [],
+    });
+  });
+
+  it("rebuilds games and sets from point history", () => {
+    const youPoint = (id: number) => ({
+      id,
+      winner: "you" as const,
+      note: "Point won",
+    });
+
+    const gamePointHistory = Array.from({ length: 4 }, (_, index) =>
+      youPoint(index + 1),
+    ).reverse();
+
+    const setPointHistory = Array.from({ length: 24 }, (_, index) =>
+      youPoint(index + 1),
+    ).reverse();
+
+    expect(getMatchScoreFromHistory(gamePointHistory)).toEqual({
+      points: { you: 0, opponent: 0 },
+      games: { you: 1, opponent: 0 },
+      sets: [],
+    });
+
+    expect(getMatchScoreFromHistory(setPointHistory)).toEqual({
+      points: { you: 0, opponent: 0 },
+      games: { you: 0, opponent: 0 },
+      sets: [{ you: 6, opponent: 0 }],
     });
   });
 
