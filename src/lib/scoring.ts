@@ -53,6 +53,24 @@ export function getSetWinner(games: Score): Player | undefined {
   return games.you > games.opponent ? "you" : "opponent";
 }
 
+export function getSetsWon(sets: Score[]): Score {
+  return sets.reduce<Score>(
+    (setsWon, set) => {
+      const winner = getSetWinner(set);
+
+      if (!winner) {
+        return setsWon;
+      }
+
+      return {
+        ...setsWon,
+        [winner]: setsWon[winner] + 1,
+      };
+    },
+    { ...initialPoints },
+  );
+}
+
 export function addPointToScore(points: Score, winner: Player): Score {
   if (isGameOver(points)) {
     return points;

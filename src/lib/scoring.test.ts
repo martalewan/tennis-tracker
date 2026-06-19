@@ -5,6 +5,7 @@ import {
   getDisplayScore,
   getGameWinner,
   getMatchStatus,
+  getSetsWon,
   getSetWinner,
   getWinRate,
   initialMatchScore,
@@ -94,6 +95,24 @@ describe("scoring helpers", () => {
         { you: 6, opponent: 3 },
         { you: 6, opponent: 4 },
       ],
+    });
+  });
+
+  it("counts sets won from completed set scores", () => {
+    expect(getSetsWon([])).toEqual({ you: 0, opponent: 0 });
+    expect(getSetsWon([{ you: 0, opponent: 6 }])).toEqual({
+      you: 0,
+      opponent: 1,
+    });
+    expect(
+      getSetsWon([
+        { you: 6, opponent: 4 },
+        { you: 5, opponent: 7 },
+        { you: 6, opponent: 3 },
+      ]),
+    ).toEqual({
+      you: 2,
+      opponent: 1,
     });
   });
 

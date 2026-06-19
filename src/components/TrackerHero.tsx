@@ -1,4 +1,4 @@
-import type { Score } from "@/lib/scoring";
+import { getSetsWon, type Score } from "@/lib/scoring";
 import CourtPreview from "./CourtPreview";
 import HeroMetric from "./HeroMetric";
 import SetSummary from "./SetSummary";
@@ -20,6 +20,7 @@ export default function TrackerHero({
   matchStatus,
   onReset,
 }: TrackerHeroProps) {
+  const setsWon = getSetsWon(sets);
   const leadingPlayer =
     points.you === points.opponent
       ? "Level"
@@ -28,7 +29,7 @@ export default function TrackerHero({
         : "Opponent leads";
 
   return (
-    <header className="grid gap-4 rounded-card border border-primary bg-primary p-4 text-white shadow-panel sm:p-5 lg:h-[40dvh] lg:min-h-[300px] lg:max-h-[330px] lg:grid-cols-[minmax(0,1fr)_300px] lg:overflow-hidden">
+    <header className="grid gap-4 rounded-card border border-primary bg-primary p-4 text-white shadow-panel sm:p-5 lg:h-[43dvh] lg:min-h-[330px] lg:max-h-[360px] lg:grid-cols-[minmax(0,1fr)_300px] lg:overflow-hidden">
       <section className="flex min-h-0 flex-col justify-between gap-3">
         <nav className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs font-extrabold uppercase text-accent-contrast">
@@ -57,10 +58,19 @@ export default function TrackerHero({
         </div>
 
         <div className="grid gap-2.5 sm:grid-cols-3">
-          <HeroMetric label="Current" value={`${games.you}-${games.opponent}`} />
-          <HeroMetric label="Sets" value={<SetSummary sets={sets} />} />
+          <HeroMetric
+            label="Current game"
+            value={`${games.you}-${games.opponent}`}
+          />
+          <HeroMetric
+            label="Sets won"
+            value={`${setsWon.you}-${setsWon.opponent}`}
+          />
           <HeroMetric label="Points won" value={pointsWon} />
         </div>
+        <p className="text-xs font-bold text-white/60">
+          Set scores: <SetSummary sets={sets} />
+        </p>
       </section>
 
       <CourtPreview leadingPlayer={leadingPlayer} status={matchStatus} />
