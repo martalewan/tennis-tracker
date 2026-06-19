@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Tennis Tracker icon</title>
+  <rect width="512" height="512" rx="96" fill="#173b2b"/>
+  <circle cx="256" cy="256" r="156" fill="#d4ff70"/>
+  <path d="M149 190c54 23 90 67 101 132 6 35 2 68-10 99" fill="none" stroke="#173b2b" stroke-width="24" stroke-linecap="round"/>
+  <path d="M363 322c-54-23-90-67-101-132-6-35-2-68 10-99" fill="none" stroke="#173b2b" stroke-width="24" stroke-linecap="round"/>
+  <path d="M98 408h316" stroke="#ffffff" stroke-width="28" stroke-linecap="round"/>
+  <path d="M116 408h280" stroke="#d85d34" stroke-width="10" stroke-linecap="round"/>
+</svg>
