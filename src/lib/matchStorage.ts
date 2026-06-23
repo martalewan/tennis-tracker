@@ -10,9 +10,16 @@ export const MATCH_SESSION_STORAGE_KEY = "tennis-tracker:match-session";
 
 export type PlayerNames = Record<Player, string>;
 
+export type MatchSetup = {
+  currentServer: Player;
+  firstServer: Player;
+  isMatchStarted: boolean;
+};
+
 export type MatchSession = {
   matchScore: MatchScore;
   history: PointRecord[];
+  matchSetup: MatchSetup;
   playerNames: PlayerNames;
 };
 
@@ -21,9 +28,16 @@ export const defaultPlayerNames: PlayerNames = {
   opponent: "Opponent",
 };
 
+export const initialMatchSetup: MatchSetup = {
+  currentServer: "you",
+  firstServer: "you",
+  isMatchStarted: false,
+};
+
 export const initialMatchSession: MatchSession = {
   matchScore: initialMatchScore,
   history: [],
+  matchSetup: initialMatchSetup,
   playerNames: defaultPlayerNames,
 };
 
@@ -63,10 +77,43 @@ function getValidMatchSession(value: unknown): MatchSession | undefined {
   return {
     matchScore: value.matchScore,
     history: value.history,
+    matchSetup: isMatchSetup(value.matchSetup)
+      ? value.matchSetup
+      : getLegacyMatchSetup(value.matchScore, value.history),
     playerNames: isPlayerNames(value.playerNames)
       ? value.playerNames
       : defaultPlayerNames,
   };
+}
+
+function getLegacyMatchSetup(
+  matchScore: MatchScore,
+  history: PointRecord[],
+): MatchSetup {
+  const hasSavedMatch =
+    history.length > 0
+    || matchScore.points.you > 0
+    || matchScore.points.opponent > 0
+    || matchScore.games.you > 0
+    || matchScore.games.opponent > 0
+    || matchScore.sets.length > 0;
+
+  return {
+    ...initialMatchSetup,
+    isMatchStarted: hasSavedMatch,
+  };
+}
+
+function isMatchSetup(value: unknown): value is MatchSetup {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  return (
+    isPlayer(value.currentServer)
+    && isPlayer(value.firstServer)
+    && typeof value.isMatchStarted === "boolean"
+  );
 }
 
 function isPlayerNames(value: unknown): value is PlayerNames {

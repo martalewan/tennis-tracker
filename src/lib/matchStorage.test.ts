@@ -21,6 +21,11 @@ describe("match storage helpers", () => {
           note: "Point won",
         },
       ],
+      matchSetup: {
+        currentServer: "opponent",
+        firstServer: "opponent",
+        isMatchStarted: true,
+      },
       playerNames: {
         you: "Marta",
         opponent: "Alex",
@@ -38,7 +43,7 @@ describe("match storage helpers", () => {
     );
   });
 
-  it("adds default player names to older saved sessions", () => {
+  it("adds defaults to older saved sessions", () => {
     expect(
       parseMatchSession(
         JSON.stringify({
@@ -57,10 +62,30 @@ describe("match storage helpers", () => {
         sets: [],
       },
       history: [],
+      matchSetup: {
+        currentServer: "you",
+        firstServer: "you",
+        isMatchStarted: true,
+      },
       playerNames: {
         you: "You",
         opponent: "Opponent",
       },
     });
+  });
+
+  it("keeps older empty saved sessions on the setup screen", () => {
+    expect(
+      parseMatchSession(
+        JSON.stringify({
+          matchScore: {
+            points: { you: 0, opponent: 0 },
+            games: { you: 0, opponent: 0 },
+            sets: [],
+          },
+          history: [],
+        }),
+      ).matchSetup.isMatchStarted,
+    ).toBe(false);
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import MatchSetupScreen from "@/components/MatchSetupScreen";
 import Scoreboard from "@/components/Scoreboard";
 import TrackerHero from "@/components/TrackerHero";
 import TrackerSidebar from "@/components/TrackerSidebar";
@@ -10,16 +11,34 @@ import {
   addPointToMatchScore,
   getMatchScoreFromHistory,
   getMatchStatus,
+  initialMatchScore,
   type Player,
+  type Score,
 } from "@/lib/scoring";
+
+function getOpponent(player: Player) {
+  return player === "you" ? "opponent" : "you";
+}
+
+function didGameFinish(previousGames: Score, nextGames: Score) {
+  return (
+    nextGames.you !== previousGames.you
+    || nextGames.opponent !== previousGames.opponent
+    || ((previousGames.you > 0 || previousGames.opponent > 0)
+      && nextGames.you === 0
+      && nextGames.opponent === 0)
+  );
+}
 
 export default function Home() {
   const {
     history,
+    matchSetup,
     matchScore,
     playerNames,
     resetSession,
     setHistory,
+    setMatchSetup,
     setMatchScore,
     setPlayerNames,
   } = useStoredMatchSession();
@@ -31,7 +50,15 @@ export default function Home() {
   const matchStatus = useMemo(() => getMatchStatus(points), [points]);
 
   function addPoint(winner: Player) {
-    setMatchScore((currentScore) => addPointToMatchScore(currentScore, winner));
+    const nextScore = addPointToMatchScore(matchScore, winner);
+
+    setMatchScore(nextScore);
+    if (didGameFinish(matchScore.games, nextScore.games)) {
+      setMatchSetup((currentSetup) => ({
+        ...currentSetup,
+        currentServer: getOpponent(currentSetup.currentServer),
+      }));
+    }
     setHistory((currentHistory) => [
       {
         id: Date.now(),
@@ -44,9 +71,17 @@ export default function Home() {
 
   function undoLastPoint() {
     const nextHistory = history.slice(1);
+    const nextScore = getMatchScoreFromHistory(nextHistory);
 
     setHistory(nextHistory);
-    setMatchScore(getMatchScoreFromHistory(nextHistory));
+    setMatchScore(nextScore);
+    setMatchSetup((currentSetup) => ({
+      ...currentSetup,
+      currentServer:
+        (nextScore.games.you + nextScore.games.opponent) % 2 === 0
+          ? currentSetup.firstServer
+          : getOpponent(currentSetup.firstServer),
+    }));
   }
 
   function updatePlayerName(player: Player, name: string) {
@@ -61,6 +96,37 @@ export default function Home() {
       ...currentNames,
       [player]: currentNames[player].trim() || defaultPlayerNames[player],
     }));
+  }
+
+  function updateFirstServer(player: Player) {
+    setMatchSetup((currentSetup) => ({
+      ...currentSetup,
+      currentServer: player,
+      firstServer: player,
+    }));
+  }
+
+  function startMatch() {
+    setMatchScore(initialMatchScore);
+    setHistory([]);
+    setMatchSetup((currentSetup) => ({
+      ...currentSetup,
+      currentServer: currentSetup.firstServer,
+      isMatchStarted: true,
+    }));
+  }
+
+  if (!matchSetup.isMatchStarted) {
+    return (
+      <MatchSetupScreen
+        firstServer={matchSetup.firstServer}
+        onPlayerNameChange={updatePlayerName}
+        onPlayerNameCommit={commitPlayerName}
+        onServerChange={updateFirstServer}
+        onStartMatch={startMatch}
+        playerNames={playerNames}
+      />
+    );
   }
 
   return (
@@ -88,6 +154,7 @@ export default function Home() {
           onPlayerNameCommit={commitPlayerName}
           playerNames={playerNames}
           points={points}
+          server={matchSetup.currentServer}
           sets={sets}
         />
         <TrackerSidebar history={history} latestPoint={latestPoint} />

@@ -18,6 +18,7 @@ type ScoreboardProps = {
   onPlayerNameCommit: (player: Player) => void;
   playerNames: PlayerNames;
   points: Score;
+  server: Player;
   sets: Score[];
 };
 
@@ -29,6 +30,7 @@ export default function Scoreboard({
   onPlayerNameCommit,
   playerNames,
   points,
+  server,
   sets,
 }: ScoreboardProps) {
   return (
@@ -61,6 +63,7 @@ export default function Scoreboard({
             onAddPoint={() => onAddPoint(player)}
             playerId={player}
             score={getDisplayScore(points, player)}
+            isServing={server === player}
             subtitle={playerSubtitles[player]}
           />
         ))}

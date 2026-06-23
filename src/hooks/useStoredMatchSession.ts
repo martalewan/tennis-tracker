@@ -10,6 +10,7 @@ import {
   parseMatchSession,
   serializeMatchSession,
   type MatchSession,
+  type MatchSetup,
   type PlayerNames,
 } from "@/lib/matchStorage";
 import type { MatchScore, PointRecord } from "@/lib/scoring";
@@ -129,6 +130,21 @@ export default function useStoredMatchSession() {
     [],
   );
 
+  const setMatchSetup = useCallback<Dispatch<SetStateAction<MatchSetup>>>(
+    (nextMatchSetup) => {
+      const currentSession = readStoredMatchSession();
+
+      saveMatchSession({
+        ...currentSession,
+        matchSetup: resolveNextValue(
+          currentSession.matchSetup,
+          nextMatchSetup,
+        ),
+      });
+    },
+    [],
+  );
+
   const resetSession = useCallback(() => {
     const currentSession = readStoredMatchSession();
     const nextSession = {
@@ -143,10 +159,12 @@ export default function useStoredMatchSession() {
 
   return {
     history: session.history,
+    matchSetup: session.matchSetup,
     matchScore: session.matchScore,
     playerNames: session.playerNames,
     resetSession,
     setHistory,
+    setMatchSetup,
     setMatchScore,
     setPlayerNames,
   };

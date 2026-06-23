@@ -1,5 +1,6 @@
 type ScoreTileProps = {
   games: number;
+  isServing: boolean;
   label: string;
   onChangeLabel: (label: string) => void;
   onCommitLabel: () => void;
@@ -11,6 +12,7 @@ type ScoreTileProps = {
 
 export default function ScoreTile({
   games,
+  isServing,
   label,
   onChangeLabel,
   onCommitLabel,
@@ -40,7 +42,7 @@ export default function ScoreTile({
           <p className="mt-1 text-sm font-bold text-muted">{subtitle}</p>
         </div>
         <span className="rounded-card bg-primary-soft px-3 py-2 text-xs font-black uppercase text-primary">
-          {games} games
+          {isServing ? `Serving · ${games} games` : `${games} games`}
         </span>
       </div>
 
