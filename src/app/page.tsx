@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import MatchCompleteCard from "@/components/MatchCompleteCard";
 import MatchSetupScreen from "@/components/MatchSetupScreen";
 import Scoreboard from "@/components/Scoreboard";
 import TrackerHero from "@/components/TrackerHero";
@@ -9,6 +10,7 @@ import useStoredMatchSession from "@/hooks/useStoredMatchSession";
 import { defaultPlayerNames } from "@/lib/matchStorage";
 import {
   addPointToMatchScore,
+  getMatchWinner,
   getMatchScoreFromHistory,
   getMatchStatus,
   initialMatchScore,
@@ -46,10 +48,21 @@ export default function Home() {
   const { games, points, sets } = matchScore;
   const pointsWon = history.filter((point) => point.winner === "you").length;
   const latestPoint = history[0];
+  const matchWinner = getMatchWinner(sets);
 
-  const matchStatus = useMemo(() => getMatchStatus(points), [points]);
+  const matchStatus = useMemo(() => {
+    if (matchWinner) {
+      return `${playerNames[matchWinner]} closed the match.`;
+    }
+
+    return getMatchStatus(points);
+  }, [matchWinner, playerNames, points]);
 
   function addPoint(winner: Player) {
+    if (matchWinner) {
+      return;
+    }
+
     const nextScore = addPointToMatchScore(matchScore, winner);
 
     setMatchScore(nextScore);
@@ -146,17 +159,28 @@ export default function Home() {
         className="grid flex-1 gap-4 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_320px]"
         aria-label="Tennis match tracker"
       >
-        <Scoreboard
-          games={games}
-          matchStatus={matchStatus}
-          onAddPoint={addPoint}
-          onPlayerNameChange={updatePlayerName}
-          onPlayerNameCommit={commitPlayerName}
-          playerNames={playerNames}
-          points={points}
-          server={matchSetup.currentServer}
-          sets={sets}
-        />
+        {matchWinner ? (
+          <MatchCompleteCard
+            historyLength={history.length}
+            onNewMatch={resetSession}
+            playerNames={playerNames}
+            pointsWon={pointsWon}
+            sets={sets}
+            winner={matchWinner}
+          />
+        ) : (
+          <Scoreboard
+            games={games}
+            matchStatus={matchStatus}
+            onAddPoint={addPoint}
+            onPlayerNameChange={updatePlayerName}
+            onPlayerNameCommit={commitPlayerName}
+            playerNames={playerNames}
+            points={points}
+            server={matchSetup.currentServer}
+            sets={sets}
+          />
+        )}
         <TrackerSidebar history={history} latestPoint={latestPoint} />
       </section>
     </main>

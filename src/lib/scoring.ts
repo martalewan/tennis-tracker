@@ -71,6 +71,23 @@ export function getSetsWon(sets: Score[]): Score {
   );
 }
 
+export function getMatchWinner(
+  sets: Score[],
+  setsToWin = 2,
+): Player | undefined {
+  const setsWon = getSetsWon(sets);
+
+  if (setsWon.you >= setsToWin) {
+    return "you";
+  }
+
+  if (setsWon.opponent >= setsToWin) {
+    return "opponent";
+  }
+
+  return undefined;
+}
+
 export function addPointToScore(points: Score, winner: Player): Score {
   if (isGameOver(points)) {
     return points;

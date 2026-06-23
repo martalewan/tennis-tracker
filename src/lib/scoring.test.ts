@@ -4,6 +4,7 @@ import {
   addPointToScore,
   getDisplayScore,
   getGameWinner,
+  getMatchWinner,
   getMatchScoreFromHistory,
   getMatchStatus,
   getSetsWon,
@@ -158,6 +159,24 @@ describe("scoring helpers", () => {
       you: 2,
       opponent: 1,
     });
+  });
+
+  it("returns the match winner after enough completed sets", () => {
+    expect(getMatchWinner([])).toBeUndefined();
+    expect(getMatchWinner([{ you: 6, opponent: 0 }])).toBeUndefined();
+    expect(
+      getMatchWinner([
+        { you: 6, opponent: 0 },
+        { you: 6, opponent: 4 },
+      ]),
+    ).toBe("you");
+    expect(
+      getMatchWinner([
+        { you: 6, opponent: 4 },
+        { you: 4, opponent: 6 },
+        { you: 3, opponent: 6 },
+      ]),
+    ).toBe("opponent");
   });
 
   it("formats regular, deuce, advantage, and game scores", () => {
