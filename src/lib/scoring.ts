@@ -88,6 +88,15 @@ export function getMatchWinner(
   return undefined;
 }
 
+export function getTotalGamesPlayed(matchScore: MatchScore) {
+  const completedSetGames = matchScore.sets.reduce(
+    (totalGames, set) => totalGames + set.you + set.opponent,
+    0,
+  );
+
+  return completedSetGames + matchScore.games.you + matchScore.games.opponent;
+}
+
 export function addPointToScore(points: Score, winner: Player): Score {
   if (isGameOver(points)) {
     return points;

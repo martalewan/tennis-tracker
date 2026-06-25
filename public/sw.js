@@ -1,4 +1,4 @@
-const CACHE_VERSION = "tennis-tracker-v1";
+const CACHE_VERSION = "tennis-tracker-v2";
 const APP_SHELL_URLS = [
   "/",
   "/manifest.webmanifest",

@@ -1,10 +1,19 @@
-import type { PointRecord } from "@/lib/scoring";
+import type { Player, PointRecord } from "@/lib/scoring";
+import type { PlayerNames } from "@/lib/matchStorage";
 
 type PointLogProps = {
   history: PointRecord[];
+  onDeletePoint: (pointId: number) => void;
+  onUpdatePointWinner: (pointId: number, winner: Player) => void;
+  playerNames: PlayerNames;
 };
 
-export default function PointLog({ history }: PointLogProps) {
+export default function PointLog({
+  history,
+  onDeletePoint,
+  onUpdatePointWinner,
+  playerNames,
+}: PointLogProps) {
   return (
     <section className="flex min-h-[220px] flex-col rounded-card border border-border bg-surface p-4 shadow-panel lg:min-h-0">
       <div className="flex items-center justify-between gap-4">
@@ -29,13 +38,41 @@ export default function PointLog({ history }: PointLogProps) {
               <span className="text-sm font-black text-accent">
                 {history.length - index}
               </span>
-              <div>
-                <strong className="block text-sm text-foreground">
+              <div className="min-w-0">
+                <strong className="block truncate text-sm text-foreground">
                   {point.note}
                 </strong>
                 <em className="text-sm not-italic text-muted">
                   {point.winner === "you" ? "Momentum up" : "Refocus"}
                 </em>
+                <div className="mt-2 grid gap-1.5 sm:grid-cols-3">
+                  {(["you", "opponent"] as Player[]).map((player) => {
+                    const isSelected = point.winner === player;
+
+                    return (
+                      <button
+                        className={`min-h-8 rounded-card border px-2 text-xs font-black transition ${
+                          isSelected
+                            ? "border-primary bg-primary text-white"
+                            : "border-border bg-surface text-muted hover:border-primary hover:text-primary"
+                        }`}
+                        type="button"
+                        key={player}
+                        onClick={() => onUpdatePointWinner(point.id, player)}
+                        aria-pressed={isSelected}
+                      >
+                        {playerNames[player]}
+                      </button>
+                    );
+                  })}
+                  <button
+                    className="min-h-8 rounded-card border border-border bg-surface px-2 text-xs font-black text-accent transition hover:border-accent hover:bg-accent-soft"
+                    type="button"
+                    onClick={() => onDeletePoint(point.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </li>
           ))}

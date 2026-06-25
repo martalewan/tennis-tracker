@@ -9,6 +9,7 @@ import {
   getMatchStatus,
   getSetsWon,
   getSetWinner,
+  getTotalGamesPlayed,
   getWinRate,
   initialMatchScore,
   initialPoints,
@@ -177,6 +178,19 @@ describe("scoring helpers", () => {
         { you: 3, opponent: 6 },
       ]),
     ).toBe("opponent");
+  });
+
+  it("counts total games across completed and current sets", () => {
+    expect(
+      getTotalGamesPlayed({
+        points: { you: 2, opponent: 1 },
+        games: { you: 3, opponent: 2 },
+        sets: [
+          { you: 6, opponent: 4 },
+          { you: 3, opponent: 6 },
+        ],
+      }),
+    ).toBe(24);
   });
 
   it("formats regular, deuce, advantage, and game scores", () => {

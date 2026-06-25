@@ -13,8 +13,11 @@ import {
   getMatchWinner,
   getMatchScoreFromHistory,
   getMatchStatus,
+  getTotalGamesPlayed,
   initialMatchScore,
+  type MatchScore,
   type Player,
+  type PointRecord,
   type Score,
 } from "@/lib/scoring";
 
@@ -30,6 +33,16 @@ function didGameFinish(previousGames: Score, nextGames: Score) {
       && nextGames.you === 0
       && nextGames.opponent === 0)
   );
+}
+
+function getServerFromScore(matchScore: MatchScore, firstServer: Player) {
+  return getTotalGamesPlayed(matchScore) % 2 === 0
+    ? firstServer
+    : getOpponent(firstServer);
+}
+
+function getPointNote(winner: Player) {
+  return winner === "you" ? "Point won" : "Point lost";
 }
 
 export default function Home() {
@@ -76,25 +89,43 @@ export default function Home() {
       {
         id: Date.now(),
         winner,
-        note: winner === "you" ? "Point won" : "Point lost",
+        note: getPointNote(winner),
       },
       ...currentHistory,
     ]);
   }
 
-  function undoLastPoint() {
-    const nextHistory = history.slice(1);
+  function applyHistoryChange(nextHistory: PointRecord[]) {
     const nextScore = getMatchScoreFromHistory(nextHistory);
 
     setHistory(nextHistory);
     setMatchScore(nextScore);
     setMatchSetup((currentSetup) => ({
       ...currentSetup,
-      currentServer:
-        (nextScore.games.you + nextScore.games.opponent) % 2 === 0
-          ? currentSetup.firstServer
-          : getOpponent(currentSetup.firstServer),
+      currentServer: getServerFromScore(nextScore, currentSetup.firstServer),
     }));
+  }
+
+  function undoLastPoint() {
+    applyHistoryChange(history.slice(1));
+  }
+
+  function updatePointWinner(pointId: number, winner: Player) {
+    applyHistoryChange(
+      history.map((point) =>
+        point.id === pointId
+          ? {
+              ...point,
+              note: getPointNote(winner),
+              winner,
+            }
+          : point,
+      ),
+    );
+  }
+
+  function deletePoint(pointId: number) {
+    applyHistoryChange(history.filter((point) => point.id !== pointId));
   }
 
   function updatePlayerName(player: Player, name: string) {
@@ -181,7 +212,13 @@ export default function Home() {
             sets={sets}
           />
         )}
-        <TrackerSidebar history={history} latestPoint={latestPoint} />
+        <TrackerSidebar
+          history={history}
+          latestPoint={latestPoint}
+          onDeletePoint={deletePoint}
+          onUpdatePointWinner={updatePointWinner}
+          playerNames={playerNames}
+        />
       </section>
     </main>
   );
